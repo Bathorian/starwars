@@ -1,10 +1,17 @@
 from flask import Flask, render_template, request, g
 import sqlite3
 
+import os
+
 app = Flask(__name__)
 DATABASE = 'starwars.db'
 
 def get_db():
+    if not os.path.exists(DATABASE):
+        print("Database not found, populating...")
+        from main import main
+        main()
+    
     db = getattr(g, '_database', None)
     if db is None:
         db = g._database = sqlite3.connect(DATABASE)

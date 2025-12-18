@@ -21,7 +21,7 @@ To make this app available online, you should use a platform that supports Pytho
 3. Create a new "Web Service".
 4. Use the following settings:
    - **Runtime**: `Python`
-   - **Build Command**: `pip install -r requirements.txt`
+   - **Build Command**: `pip install -r requirements.txt; python main.py`
    - **Start Command**: `gunicorn app:app`
 
 ### 2. PythonAnywhere
