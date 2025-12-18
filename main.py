@@ -22,8 +22,8 @@ def fetch_data(resource):
 def setup_database(conn):
     cursor = conn.cursor()
     
-    # Enable foreign keys
-    cursor.execute("PRAGMA foreign_keys = ON")
+    # Disable foreign keys temporarily to drop tables
+    cursor.execute("PRAGMA foreign_keys = OFF")
 
     # Drop existing tables and junction tables
     tables = ['film_people', 'film_planets', 'film_starships', 'film_vehicles', 'film_species', 
@@ -31,6 +31,9 @@ def setup_database(conn):
               'films', 'people', 'planets', 'species', 'vehicles', 'starships']
     for table in tables:
         cursor.execute(f"DROP TABLE IF EXISTS {table}")
+    
+    # Re-enable foreign keys
+    cursor.execute("PRAGMA foreign_keys = ON")
 
     # Create Core Tables
     cursor.execute("""
