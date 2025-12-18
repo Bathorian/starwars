@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ data.name or data.title }} - Star Wars Details{% endblock %}
+
+{% block content %}
+    <a href="javascript:history.back()" class="back-link">← Back</a>
+    <h1>{{ data.name or data.title }}</h1>
+    
+    <div class="details">
+        <div class="attributes">
+            <h3>Attributes</h3>
+            {% for key, value in data.items() %}
+                {% if key not in ['id', 'url', 'created', 'edited', 'homeworld_id'] %}
+                <div class="attr-item">
+                    <span class="attr-name">{{ key.replace('_', ' ') }}:</span> 
+                    <span>{{ value }}</span>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        
+        <div class="relationships">
+            <h3>Related Resources</h3>
+            {% if type == 'people' %}
+                <div class="attr-item">
+                    <span class="attr-name">Homeworld:</span>
+                    {% if related.homeworld %}
+                        <a href="/resource/planets/{{ related.homeworld.id }}">{{ related.homeworld.name }}</a>
+                    {% else %}
+                        Unknown
+                    {% endif %}
+                </div>
+                <div class="attr-item">
+                    <span class="attr-name">Films:</span>
+                    <ul>
+                    {% for film in related.films %}
+                        <li><a href="/resource/films/{{ film.id }}">{{ film.title }}</a></li>
+                    {% endfor %}
+                    </ul>
+                </div>
+            {% elif type == 'films' %}
+                <div class="attr-item">
+                    <span class="attr-name">Characters:</span>
+                    <ul>
+                    {% for person in related.people %}
+                        <li><a href="/resource/people/{{ person.id }}">{{ person.name }}</a></li>
+                    {% endfor %}
+                    </ul>
+                </div>
+                <div class="attr-item">
+                    <span class="attr-name">Planets:</span>
+                    <ul>
+                    {% for planet in related.planets %}
+                        <li><a href="/resource/planets/{{ planet.id }}">{{ planet.name }}</a></li>
+                    {% endfor %}
+                    </ul>
+                </div>
+            {% elif type == 'planets' %}
+                <div class="attr-item">
+                    <span class="attr-name">Residents:</span>
+                    <ul>
+                    {% for person in related.people %}
+                        <li><a href="/resource/people/{{ person.id }}">{{ person.name }}</a></li>
+                    {% endfor %}
+                    </ul>
+                </div>
+                <div class="attr-item">
+                    <span class="attr-name">Films:</span>
+                    <ul>
+                    {% for film in related.films %}
+                        <li><a href="/resource/films/{{ film.id }}">{{ film.title }}</a></li>
+                    {% endfor %}
+                    </ul>
+                </div>
+            {% elif type in ['species', 'vehicles', 'starships'] %}
+                {% if related.homeworld %}
+                <div class="attr-item">
+                    <span class="attr-name">Homeworld:</span>
+                    <a href="/resource/planets/{{ related.homeworld.id }}">{{ related.homeworld.name }}</a>
+                </div>
+                {% endif %}
+                
+                {% if related.people %}
+                <div class="attr-item">
+                    <span class="attr-name">{% if type == 'species' %}People{% else %}Pilots{% endif %}:</span>
+                    <ul>
+                    {% for person in related.people %}
+                        <li><a href="/resource/people/{{ person.id }}">{{ person.name }}</a></li>
+                    {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                
+                <div class="attr-item">
+                    <span class="attr-name">Films:</span>
+                    <ul>
+                    {% for film in related.films %}
+                        <li><a href="/resource/films/{{ film.id }}">{{ film.title }}</a></li>
+                    {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_css %}
+    h1 { border-bottom: 2px solid #ffe81f; color: #fff; text-align: left; }
+    .details { margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: left;}
+    .attributes { background: #333; padding: 20px; border-radius: 10px; }
+    .relationships { background: #222; padding: 20px; border-radius: 10px; }
+    .attr-item { margin-bottom: 10px; }
+    .attr-name { font-weight: bold; color: #aaa; text-transform: capitalize; }
+    .back-link { display: inline-block; margin-bottom: 20px; color: #ffe81f; text-decoration: none; width: 100%; text-align: left; }
+{% endblock %}

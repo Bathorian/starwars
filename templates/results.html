@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Search Results - {{ query }}{% endblock %}
+
+{% block content %}
+    <a href="/" class="back-link">← Back to Search</a>
+    <h1>Results for "{{ query }}"</h1>
+
+    <div id="results-container">
+        {% include '_results_partial.html' %}
+    </div>
+{% endblock %}
+
+{% block extra_css %}
+    h1 { border-bottom: 2px solid #ffe81f; text-align: left; }
+    .back-link { display: inline-block; margin-bottom: 20px; }
+{% endblock %}
