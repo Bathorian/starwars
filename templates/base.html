@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Star Wars Search Engine{% endblock %}</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1a1a1a; color: #ffe81f; padding: 20px; text-align: center; }
+        .header { margin-bottom: 40px; }
+        .header h1 { font-size: 2.5em; margin-bottom: 20px; cursor: pointer; }
+        .header a { text-decoration: none; color: inherit; }
+        input[type="text"] { padding: 10px; width: 300px; font-size: 1.2em; border-radius: 5px; border: none; }
+        button { padding: 10px 20px; font-size: 1.2em; background-color: #ffe81f; color: black; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background-color: #ffd700; }
+        #global-results-container { margin-top: 40px; text-align: left; max-width: 800px; margin-left: auto; margin-right: auto; }
+        .loading { color: #fff; font-style: italic; text-align: center; }
+        
+        /* Shared Styles for Results */
+        .resource-section { margin-bottom: 30px; }
+        .resource-title { font-size: 1.5em; text-transform: capitalize; margin-bottom: 10px; color: #fff; border-bottom: 1px solid #ffe81f; }
+        ul { list-style: none; padding: 0; }
+        li { margin: 5px 0; }
+        a { color: #ffe81f; text-decoration: none; font-size: 1.1em; }
+        a:hover { text-decoration: underline; }
+        
+        {% block extra_css %}{% endblock %}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1><a href="/">Star Wars Search</a></h1>
+        <form id="global-search-form" action="/search" method="get">
+            <input type="text" id="global-query-input" name="q" placeholder="Search for people, films, planets..." required value="{{ query or '' }}">
+            <button type="submit">Search</button>
+        </form>
+    </div>
+
+    <div id="global-results-container">
+        {% block content %}{% endblock %}
+    </div>
+
+    <script>
+        document.getElementById('global-search-form').addEventListener('submit', function(e) {
+            const query = document.getElementById('global-query-input').value;
+            const resultsContainer = document.getElementById('global-results-container');
+            
+            // If we are on the home page or a page that supports dynamic results, we can AJAX
+            // But if we want it to work from ANY page and show results, we might want to stay on the page
+            // and replace the content.
+            
+            e.preventDefault();
+            resultsContainer.innerHTML = '<p class="loading">Searching the galaxy...</p>';
+            
+            fetch(`/search?q=${encodeURIComponent(query)}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.text())
+            .then(html => {
+                resultsContainer.innerHTML = html;
+                // Update URL without reloading if possible, to allow bookmarking
+                const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?q=' + encodeURIComponent(query);
+                // Actually, if we are in /resource/people/1, replacing content with search results 
+                // might be confusing if the URL doesn't change to /search.
+                // However, the user asked for the search bar to be at the top and presumably 
+                // they want to be able to search from there.
+                
+                // If we want to keep it simple and match the "doesn't reload" requirement from before:
+                // We'll replace the main content area with results.
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                resultsContainer.innerHTML = '<p>An error occurred while searching.</p>';
+            });
+        });
+    </script>
+</body>
+</html>

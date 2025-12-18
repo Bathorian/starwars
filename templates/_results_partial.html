@@ -1,0 +1,14 @@
+{% if not results %}
+    <p>No results found.</p>
+{% else %}
+    {% for resource_type, items in results.items() %}
+        <div class="resource-section">
+            <div class="resource-title">{{ resource_type }}</div>
+            <ul>
+                {% for item in items %}
+                    <li><a href="/resource/{{ resource_type }}/{{ item.id }}">{{ item.display_name }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endfor %}
+{% endif %}
