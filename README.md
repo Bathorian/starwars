@@ -22,7 +22,15 @@ To make this app available online, you should use a platform that supports Pytho
 4. Use the following settings:
    - **Runtime**: `Python`
    - **Build Command**: `pip install -r requirements.txt; python main.py`
-   - **Start Command**: `gunicorn app:app`
+   - **Start Command**: `gunicorn app:app` (Ensure this is exactly `app:app`, not `starwars`)
+
+### Troubleshooting "ModuleNotFoundError: No module named 'starwars'"
+If you see this error in your Render logs, it means Render is trying to run `gunicorn starwars` instead of `gunicorn app:app`. 
+To fix this:
+1. Go to your **Settings** tab in the Render dashboard for this service.
+2. Locate the **Start Command** field.
+3. Change it to `gunicorn app:app`.
+4. Save and re-deploy.
 
 ### 2. PythonAnywhere
 Excellent for Flask apps and supports SQLite perfectly.
